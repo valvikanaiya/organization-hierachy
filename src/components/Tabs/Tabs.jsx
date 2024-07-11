@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { employeeData } from "../../utils/utils";
+import { useDispatch, useSelector } from "react-redux";
 import Employee from "../Employee/Employee";
 import Modal from "../Modal/Modal";
 import AddEmployee from "../AddEmployee/AddEmployee";
-import { useDispatch, useSelector } from "react-redux";
 import { deleteEmployee } from "../../store/slice/employee";
 
 const Tabs = ({ employees }) => {
   const { employeList } = useSelector((state) => state.employee);
+
   const [expand, setExpand] = useState();
   const [newEployee, setNewEmployee] = useState();
   const [open, setOpen] = useState(false);
@@ -16,7 +16,7 @@ const Tabs = ({ employees }) => {
   const dispatch = useDispatch();
 
   const filterEmployeById = (id) => {
-    setExpand(id === expand ? null : id);
+    setExpand(id);
     const data = employeList?.filter((item) => item.managerId === id);
     setNewEmployee(data);
   };

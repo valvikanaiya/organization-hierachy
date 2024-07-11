@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Tabs from "./components/Tabs/Tabs";
-import Card from "./components/Card/Card";
-import ProfileCard from "./components/ProfileCard/ProfileCard";
-
 import { useSelector } from "react-redux";
-
-import ChangeManager from "./components/ChangeManager/ChangeManager";
-import Modal from "./components/Modal/Modal";
+import Tabs from "@components/Tabs/Tabs";
+import Card from "@components/Card/Card";
+import ProfileCard from "@components/ProfileCard/ProfileCard";
+import ChangeManager from "@components/ChangeManager/ChangeManager";
+import Modal from "@components/Modal/Modal";
 
 const App = () => {
   const { employeList } = useSelector((state) => state.employee);
@@ -19,6 +17,7 @@ const App = () => {
     const newCeo = employeList?.find((item) => item.managerId === null);
     setCeo({ ...newCeo });
   }, [employeList]);
+
   useEffect(() => {
     const newRoot = employeList.filter((item) => item.managerId === ceo?.id);
     setRoots(newRoot);
@@ -27,9 +26,11 @@ const App = () => {
   const handeleModalOpen = () => {
     setOpen(true);
   };
+  
   const handelModalClose = () => {
     setOpen(false);
   };
+
   return (
     <>
       <Modal onClose={handelModalClose} open={open}>

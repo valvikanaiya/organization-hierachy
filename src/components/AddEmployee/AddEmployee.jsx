@@ -20,18 +20,22 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
     email: false,
     imageUrl: false,
   });
+
   const dispatch = useDispatch();
 
   const handelNameChange = (e) => {
     setFormData((preve) => ({ ...preve, name: e.target.value }));
   };
+
   const handelEmailChange = (e) => {
     setFormData((preve) => ({ ...preve, email: e.target.value }));
   };
+
   const handelSubordinatesChange = (e) => {
     const subordinates = Number(e.target.value) ? [e.target.value] : [];
     setFormData((preve) => ({ ...preve, subordinates: subordinates }));
   };
+
   const handelDesignationChange = (e) => {
     setFormData((preve) => ({ ...preve, designation: e.target.value }));
   };
@@ -50,10 +54,21 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
       setError((preve) => ({ ...preve, designation: true }));
       return;
     }
+    function isValidEmail(email) {
+      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return regex.test(email);
+    }
+
+    if (!isValidEmail(email)) {
+      setError((preve) => ({ ...preve, email: true }));
+      return;
+    }
+
     if (email?.trim() === "") {
       setError((preve) => ({ ...preve, email: true }));
       return;
-    }    
+    }
+
     dispatch(
       addSubordinates({
         ...formData,

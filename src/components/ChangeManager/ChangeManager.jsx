@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changeManager } from "../../store/slice/employee";
+import { changeManager } from "@store/slice/employee";
 
 const ChangeManager = ({ handelModalClose }) => {
   const { employeList } = useSelector((state) => state.employee);
+
   const [defaultManager, setDefaultManager] = useState({});
   const [newManager, setNewManager] = useState(defaultManager);
 
