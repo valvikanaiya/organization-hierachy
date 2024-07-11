@@ -6,6 +6,7 @@ const employeSlice = createSlice({
   name: "employee",
   initialState: {
     employeList: initialState,
+    employeIdcounter: 8,
   },
   reducers: {
     addSubordinates: (state, actions) => {
@@ -21,6 +22,7 @@ const employeSlice = createSlice({
           };
         } else return item;
       });
+      state.employeIdcounter = state.employeIdcounter + 1;
     },
     deleteEmployee: (state, actions) => {
       let newState = JSON.parse(JSON.stringify(state)).employeList;

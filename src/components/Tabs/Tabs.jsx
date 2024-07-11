@@ -6,7 +6,9 @@ import AddEmployee from "../AddEmployee/AddEmployee";
 import { deleteEmployee } from "../../store/slice/employee";
 
 const Tabs = ({ employees }) => {
-  const { employeList } = useSelector((state) => state.employee);
+  const { employeList, employeIdcounter } = useSelector(
+    (state) => state.employee
+  );
 
   const [expand, setExpand] = useState();
   const [newEployee, setNewEmployee] = useState();
@@ -16,7 +18,7 @@ const Tabs = ({ employees }) => {
   const dispatch = useDispatch();
 
   const filterEmployeById = (id) => {
-    setExpand(id);
+    setExpand(id === expand ? null : id);
     const data = employeList?.filter((item) => item.managerId === id);
     setNewEmployee(data);
   };
@@ -43,14 +45,14 @@ const Tabs = ({ employees }) => {
     <>
       <Modal onClose={handelModalClose} open={open}>
         <AddEmployee
-          id={employeList?.length + 1}
+          id={employeIdcounter}
           managerId={managerId}
           handelModalClose={handelModalClose}
           imageUrl={"https://via.placeholder.com/150"}
         />
       </Modal>
       <div className="w-full">
-        <div className="flex flex-wrap">
+        <div className="flex justify-center md:justify-between flex-wrap">
           {employees?.map((item) => (
             <div
               key={item.id}
