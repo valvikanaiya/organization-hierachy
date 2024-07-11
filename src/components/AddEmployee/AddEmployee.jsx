@@ -56,7 +56,6 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
   };
 
   const handelSubmit = () => {
-    console.log(error);
     const { imageUrl, name, designation, email } = formData;
     if (imageUrl?.trim() === "") {
       setError((preve) => ({ ...preve, imageUrl: true }));
@@ -81,15 +80,13 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
       return;
     }
 
-    // dispatch(
-    //   addSubordinates({
-    //     ...formData,
-    //   })
-    // );
-    // handelModalClose();
+    dispatch(
+      addSubordinates({
+        ...formData,
+      })
+    );
+    handelModalClose();
   };
-
-  console.log(error);
 
   return (
     <div className="p-4  min-w-[400px]">

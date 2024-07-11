@@ -14,6 +14,7 @@ const employeSlice = createSlice({
       const managerId = data.managerId;
 
       state.employeList.push(actions.payload);
+
       state.employeList = state.employeList.map((item) => {
         if (item.id === managerId) {
           return {
@@ -22,17 +23,20 @@ const employeSlice = createSlice({
           };
         } else return item;
       });
+
       state.employeIdcounter = state.employeIdcounter + 1;
     },
     deleteEmployee: (state, actions) => {
       let newState = JSON.parse(JSON.stringify(state)).employeList;
+
       const { id, managerId } = actions.payload;
-      console.log(managerId, id);
+
       let removeForParentManager = newState.filter((item) => {
         if (item.id !== id) {
           return { ...item };
         }
       });
+
       removeForParentManager = removeForParentManager.map((item) => {
         if (item.id === managerId) {
           const removeSubstitudes = item.subordinates.filter(
@@ -48,8 +52,11 @@ const employeSlice = createSlice({
       const { manager, newManager } = actions.payload;
 
       let newState = JSON.parse(JSON.stringify(state)).employeList;
+
       const getNewManager = newState.find((item) => item.id === newManager);
+
       const getManager = newState.find((item) => item.id === manager);
+
       newState = newState.map((item) => {
         if (item.id === newManager) {
           return {
@@ -69,8 +76,7 @@ const employeSlice = createSlice({
           return { ...item };
         }
       });
-
-      console.log(newState);
+      
       state.employeList = newState;
     },
   },

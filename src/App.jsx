@@ -55,7 +55,7 @@ const App = () => {
           imageUrl={"https://via.placeholder.com/150"}
         />
       </Modal>
-      <div className="min-h-screen min-w-full  p-4">
+      <div className="min-h-screen min-w-full bg-slate-950  p-4">
         <div className="w-[99%] mx-auto">
           <div className="md:w-full mx-auto flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
             <Card className="w-full sm:w-[500px]">

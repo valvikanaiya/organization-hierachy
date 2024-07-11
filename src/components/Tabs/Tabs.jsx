@@ -52,11 +52,11 @@ const Tabs = ({ employees }) => {
         />
       </Modal>
       <div className="w-full">
-        <div className="flex justify-center md:justify-between flex-wrap">
+        <div className="flex justify-center  md:justify-between flex-wrap">
           {employees?.map((item) => (
             <div
               key={item.id}
-              className={`flex flex-wrap gap-2 ${
+              className={`flex flex-1 md:flex-0 flex-wrap gap-4 ${
                 item.managerId === null ? "justify-center" : "justify-between"
               }`}>
               <Employee
