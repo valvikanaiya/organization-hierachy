@@ -23,11 +23,23 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
 
   const dispatch = useDispatch();
 
+  function isValidEmail(email) {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  }
+
   const handelNameChange = (e) => {
+    if (e.target.value?.trim() !== "")
+      setError((preve) => ({ ...preve, name: false }));
+    else setError((preve) => ({ ...preve, name: true }));
+
     setFormData((preve) => ({ ...preve, name: e.target.value }));
   };
 
   const handelEmailChange = (e) => {
+    if (isValidEmail(e.target.value))
+      setError((preve) => ({ ...preve, email: false }));
+    else setError((preve) => ({ ...preve, email: true }));
     setFormData((preve) => ({ ...preve, email: e.target.value }));
   };
 
@@ -37,10 +49,14 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
   };
 
   const handelDesignationChange = (e) => {
+    if (e.target.value?.trim() !== "")
+      setError((preve) => ({ ...preve, designation: false }));
+    else setError((preve) => ({ ...preve, designation: true }));
     setFormData((preve) => ({ ...preve, designation: e.target.value }));
   };
 
   const handelSubmit = () => {
+    console.log(error);
     const { imageUrl, name, designation, email } = formData;
     if (imageUrl?.trim() === "") {
       setError((preve) => ({ ...preve, imageUrl: true }));
@@ -54,10 +70,6 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
       setError((preve) => ({ ...preve, designation: true }));
       return;
     }
-    function isValidEmail(email) {
-      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      return regex.test(email);
-    }
 
     if (!isValidEmail(email)) {
       setError((preve) => ({ ...preve, email: true }));
@@ -69,13 +81,15 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
       return;
     }
 
-    dispatch(
-      addSubordinates({
-        ...formData,
-      })
-    );
-    handelModalClose();
+    // dispatch(
+    //   addSubordinates({
+    //     ...formData,
+    //   })
+    // );
+    // handelModalClose();
   };
+
+  console.log(error);
 
   return (
     <div className="p-4  min-w-[400px]">
@@ -92,6 +106,7 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
               type="text"
               label={"Name"}
               value={formData.name}
+              error={error.name}
               onChange={(e) => handelNameChange(e)}
               placeholder="Enter the name"
             />
@@ -119,12 +134,13 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
               type="email"
               label={"Email"}
               value={formData.email}
+              error={error.email}
               onChange={(e) => {
                 handelEmailChange(e);
               }}
             />
           </div>
-          <div>
+          {/* <div>
             <InputsItem
               type="number"
               label={"Subordinates"}
@@ -133,11 +149,12 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
                 handelSubordinatesChange(e);
               }}
             />
-          </div>
+          </div> */}
           <div>
             <InputsItem
               type="text"
               label={"Designation"}
+              error={error.designation}
               value={formData.designation}
               onChange={(e) => {
                 handelDesignationChange(e);
@@ -155,7 +172,7 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
         </button>
         <button
           type="button"
-          onClick={handelSubmit}
+          onClick={() => handelSubmit()}
           className="font-semibold py-2 px-4 bg-green-500/75 hover:bg-green-500 rounded  text-white">
           Add
         </button>

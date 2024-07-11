@@ -15,6 +15,7 @@ const App = () => {
   const [roots, setRoots] = useState([]);
   const [ceo, setCeo] = useState({});
   const [open, setOpen] = useState(false);
+  const [addModal, setAddModal] = useState(false);
 
   useEffect(() => {
     const newCeo = employeList?.find((item) => item.managerId === null);
@@ -34,11 +35,11 @@ const App = () => {
     setOpen(false);
   };
   const handeleAddModalOpen = () => {
-    setOpen(true);
+    setAddModal(true);
   };
 
   const handelAddModalClose = () => {
-    setOpen(false);
+    setAddModal(false);
   };
 
   return (
@@ -46,7 +47,7 @@ const App = () => {
       <Modal onClose={handelModalClose} open={open}>
         <ChangeManager handelModalClose={handelModalClose} />
       </Modal>
-      <Modal onClose={handelAddModalClose} open={open}>
+      <Modal onClose={handelAddModalClose} open={addModal}>
         <AddEmployee
           id={employeIdcounter}
           managerId={ceo.id}
@@ -64,7 +65,7 @@ const App = () => {
                 name={ceo.name}
                 designation={ceo.designation}
                 email={ceo.email}
-                addEmployee={() => handeleAddModalOpen()}
+                addEmployee={handeleAddModalOpen}
                 subordinates={ceo.subordinates?.length || 0}
                 editEmployee={handeleModalOpen}
               />

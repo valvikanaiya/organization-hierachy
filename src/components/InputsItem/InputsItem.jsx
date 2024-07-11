@@ -9,6 +9,7 @@ const InputsItem = ({
   max,
   disabled,
   placeholder,
+  error,
 }) => {
   return (
     <div className="">
@@ -18,7 +19,9 @@ const InputsItem = ({
         </label>
       )}
       <input
-        className={`block mb-3 border p-2 transition  hover:border-indigo-400 disabled:hover:border-gray-400 rounded ring-0 w-full text-sm focus:outline-1 focus:outline-indigo-400 focus:outline-none focus:ring-0 focus:-outline-offset-0`}
+        className={`block mb-3 border p-2 transition  hover:border-indigo-400 disabled:hover:border-gray-400 rounded ring-0 w-full text-sm focus:outline-1 focus:outline-indigo-400 focus:outline-none focus:ring-0 focus:-outline-offset-0 ${
+          error ? "outline outline-red-600" : ""
+        }`}
         type={type}
         value={value}
         onChange={onChange}
