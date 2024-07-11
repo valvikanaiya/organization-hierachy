@@ -39,53 +39,37 @@ const employeSlice = createSlice({
           return { ...item, subordinates: [...removeSubstitudes] };
         } else return { ...item };
       });
-      
+
       state.employeList = removeForParentManager;
     },
     changeManager: (state, actions) => {
       const { manager, newManager } = actions.payload;
 
       let newState = JSON.parse(JSON.stringify(state)).employeList;
-
-      newState = newState?.map((item) => {
-        if (item.managerId === manager) {
-          return { ...item, managerId: newManager };
-        } else if (item.managerId === newManager) {
-          return { ...item, managerId: manager };
+      const getNewManager = newState.find((item) => item.id === newManager);
+      const getManager = newState.find((item) => item.id === manager);
+      newState = newState.map((item) => {
+        if (item.id === newManager) {
+          return {
+            ...item,
+            name: getManager.name,
+            email: getManager.email,
+            designation: getManager.designation,
+          };
+        } else if (item.id === manager) {
+          return {
+            ...item,
+            name: getNewManager.name,
+            email: getNewManager.email,
+            designation: getNewManager.designation,
+          };
         } else {
           return { ...item };
         }
       });
 
-      let newManagersubordinates =
-        newState?.find((item) => item.id === newManager)?.subordinates || null;
-      console.log(newManagersubordinates);
-
-      let managersubordinates =
-        newState?.find((item) => item.id === manager)?.subordinates || null;
-      managersubordinates = managersubordinates?.filter(
-        (item) => item !== newManager
-      );
-
-      if (manager === newManager) return;
-      const setManager = newState?.map((item) => {
-        if (item.id === manager) {
-          return {
-            ...item,
-            managerId: newManager,
-            subordinates: [...newManagersubordinates],
-          };
-        } else if (item.id === newManager) {
-          return {
-            ...item,
-            managerId: null,
-            subordinates: [...managersubordinates, manager],
-          };
-        } else {
-          return { ...item, subordinates: [...item.subordinates] };
-        }
-      });
-      state.employeList = setManager;
+      console.log(newState);
+      state.employeList = newState;
     },
   },
 });
