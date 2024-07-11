@@ -6,8 +6,9 @@ const ChangeManager = ({ handelModalClose }) => {
   const { employeList } = useSelector((state) => state.employee);
   const [defaultManager, setDefaultManager] = useState({});
   const [newManager, setNewManager] = useState(defaultManager);
+
   const dispatch = useDispatch();
-  console.log("newManager", newManager);
+
   const handelManagerChange = () => {
     if (newManager === null) {
       return;
@@ -21,13 +22,15 @@ const ChangeManager = ({ handelModalClose }) => {
       handelModalClose();
     }
   };
+
   useEffect(() => {
     setNewManager(defaultManager);
   }, [defaultManager]);
+
   useEffect(() => {
     const manager = employeList.find((item) => item.managerId === null);
     setDefaultManager(manager.id);
-  }, []);
+  }, [employeList]);
 
   return (
     <div className="p-4  min-w-[400px]">

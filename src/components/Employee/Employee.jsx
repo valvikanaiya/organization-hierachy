@@ -5,11 +5,17 @@ const Employee = ({
   employee,
   handelEmployeeView,
   handelModalOpen,
+  isrootManager,
+  deleteEmployee,
 }) => {
   return (
     <div
-      className={`flex w-full sm:w-auto items-center justify-center relative py-12 md:p-12 before:content-[''] before:h-[3rem] before:w-[0px] before:border before:absolute  before:top-[-0%] before:border-indigo-800  ${
-        expand === employee.id
+      className={`flex w-full sm:w-auto items-center justify-center relative py-12 md:p-12 ${
+        !isrootManager
+          ? "before:content-[''] before:h-[3rem] before:w-[0px] before:border before:absolute  before:top-[-0%] before:border-indigo-800"
+          : ""
+      }  ${
+        expand
           ? "after:content-[''] after:h-[3rem] after:w-[0px] after:border after:absolute  after:bottom-[-0%] after:border-indigo-800 "
           : ""
       }`}>
@@ -26,6 +32,7 @@ const Employee = ({
           email={employee?.email}
           subordinates={employee?.subordinates?.length || 0}
           addEmployee={() => handelModalOpen(employee.id)}
+          deleteEmployee={deleteEmployee}
         />
       </Card>
     </div>

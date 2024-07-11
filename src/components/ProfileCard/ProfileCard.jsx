@@ -1,6 +1,6 @@
 import PlaceholderImage from "@assets/Icons/PlaceholderImage.svg";
 import Edit from "@assets/Icons/Edit.svg";
-
+import Delete from "@assets/Icons/Delete.svg";
 export default function ProfileCard({
   img,
   name,
@@ -9,6 +9,7 @@ export default function ProfileCard({
   subordinates,
   addEmployee,
   editEmployee,
+  deleteEmployee,
 }) {
   return (
     <>
@@ -20,7 +21,7 @@ export default function ProfileCard({
           <img
             className="w-full object-cover h-full"
             src={img || PlaceholderImage}
-            onError={(e) => console.log((e.target.src = PlaceholderImage))}
+            onError={(e) => (e.target.src = PlaceholderImage)}
             alt=""
           />
         </div>
@@ -53,6 +54,13 @@ export default function ProfileCard({
                 className="flex items-center justify-center p-2 rounded border-2 border-indigo-500 py-3 px-6 hover:border-indigo-600"
                 onClick={() => editEmployee()}>
                 <img src={Edit} className="h-4 w-4" alt="" />
+              </button>
+            )}
+            {deleteEmployee && (
+              <button
+                className="flex items-center justify-center p-2 rounded border-2 border-red-500 bg-red-500 py-3 px-4 hover:border-red-600"
+                onClick={() => deleteEmployee()}>
+                <img src={Delete} className="h-4 w-4" alt="" />
               </button>
             )}
           </div>

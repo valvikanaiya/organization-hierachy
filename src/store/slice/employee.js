@@ -22,9 +22,31 @@ const employeSlice = createSlice({
         } else return item;
       });
     },
+    deleteEmployee: (state, actions) => {
+      let newState = JSON.parse(JSON.stringify(state)).employeList;
+      const { id, managerId } = actions.payload;
+      console.log(managerId, id);
+      let removeForParentManager = newState.filter((item) => {
+        if (item.id !== id) {
+          return { ...item };
+        }
+      });
+      removeForParentManager = removeForParentManager.map((item) => {
+        if (item.id === managerId) {
+          const removeSubstitudes = item.subordinates.filter(
+            (item) => item !== id
+          );
+          return { ...item, subordinates: [...removeSubstitudes] };
+        } else return { ...item };
+      });
+      
+      state.employeList = removeForParentManager;
+    },
     changeManager: (state, actions) => {
       const { manager, newManager } = actions.payload;
+
       let newState = JSON.parse(JSON.stringify(state)).employeList;
+
       newState = newState?.map((item) => {
         if (item.managerId === manager) {
           return { ...item, managerId: newManager };
@@ -44,7 +66,7 @@ const employeSlice = createSlice({
       managersubordinates = managersubordinates?.filter(
         (item) => item !== newManager
       );
-      console.log(manager, newManager);
+
       if (manager === newManager) return;
       const setManager = newState?.map((item) => {
         if (item.id === manager) {
@@ -68,6 +90,7 @@ const employeSlice = createSlice({
   },
 });
 
-export const { addSubordinates, changeManager } = employeSlice.actions;
+export const { addSubordinates, changeManager, deleteEmployee } =
+  employeSlice.actions;
 
 export default employeSlice.reducer;

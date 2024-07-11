@@ -30,7 +30,6 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
   };
   const handelSubordinatesChange = (e) => {
     const subordinates = Number(e.target.value) ? [e.target.value] : [];
-    console.log(subordinates);
     setFormData((preve) => ({ ...preve, subordinates: subordinates }));
   };
   const handelDesignationChange = (e) => {
@@ -54,8 +53,7 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
     if (email?.trim() === "") {
       setError((preve) => ({ ...preve, email: true }));
       return;
-    }
-    console.log(formData);
+    }    
     dispatch(
       addSubordinates({
         ...formData,
