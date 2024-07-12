@@ -52,11 +52,11 @@ const Tabs = ({ employees }) => {
         />
       </Modal>
       <div className="w-full">
-        <div className="flex justify-center  md:justify-between flex-wrap">
+        <div className="flex justify-center place-self-stretch  flex-wrap">
           {employees?.map((item) => (
             <div
               key={item.id}
-              className={`flex flex-1 md:flex-0 flex-wrap gap-4 ${
+              className={`flex  flex-wrap gap-4 ${
                 item.managerId === null ? "justify-center" : "justify-between"
               }`}>
               <Employee
@@ -77,7 +77,7 @@ const Tabs = ({ employees }) => {
       </div>
       <div className="w-full">
         {expand && (
-          <div className="border-t border-indigo-600 ">
+          <div className="border-t flex flex-wrap border-indigo-600 ">
             <Tabs key={Math.random(1, 100) * 100} employees={newEployee} />
           </div>
         )}

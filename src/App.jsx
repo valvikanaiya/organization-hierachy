@@ -56,9 +56,9 @@ const App = () => {
         />
       </Modal>
       <div className="min-h-screen min-w-full bg-slate-950  p-4">
-        <div className="w-[99%] mx-auto">
-          <div className="md:w-full mx-auto flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
-            <Card className="w-full sm:w-[500px]">
+        <div className="md:px-0 px-3 md:w-[99%] mx-auto">
+          <div className="w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
+            <Card className="w-full  sm:w-[500px]">
               <ProfileCard
                 key={ceo.id}
                 img={ceo.imageUrl}
