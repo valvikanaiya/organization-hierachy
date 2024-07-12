@@ -59,13 +59,11 @@ const App = () => {
 
       <div className="min-h-screen min-w-full bg-slate-950  p-4">
         {employeList.length === 0 ? (
-          <div className="flex h-screen items-center justify-center">
-            <button
-              className="text-white font-semibold bg-indigo-700 hover:bg-indigo-800 transition-all py-2 px-4 rounded"
-              onClick={handeleAddModalOpen}>
-              Add Manager
-            </button>
-          </div>
+          <button
+            className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]  text-white font-semibold bg-indigo-700 hover:bg-indigo-800 transition-all py-2 px-4 rounded"
+            onClick={handeleAddModalOpen}>
+            Add Manager
+          </button>
         ) : (
           <div className="md:px-0 px-3 md:w-[99%] mx-auto">
             <div
