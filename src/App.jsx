@@ -16,16 +16,17 @@ const App = () => {
   const [ceo, setCeo] = useState({});
   const [open, setOpen] = useState(false);
   const [addModal, setAddModal] = useState(false);
+  const [isActive, setIsAvtive] = useState(false);
 
   useEffect(() => {
     const newCeo = employeList?.find((item) => item.managerId === null);
     setCeo({ ...newCeo });
-  }, [employeList]);
+  }, [employeList, isActive]);
 
   useEffect(() => {
     const newRoot = employeList.filter((item) => item.managerId === ceo?.id);
     setRoots(newRoot);
-  }, [ceo, employeList]);
+  }, [ceo, employeList, isActive]);
 
   const handeleModalOpen = () => {
     setOpen(true);
@@ -67,7 +68,13 @@ const App = () => {
           </div>
         ) : (
           <div className="md:px-0 px-3 md:w-[99%] mx-auto">
-            <div className="w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
+            <div
+              className={`w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 ${
+                isActive && ceo.subordinates?.length !== 0
+                  ? "before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800"
+                  : ""
+              }`}
+              onClick={() => setIsAvtive(!isActive)}>
               <Card className="w-full  sm:w-[500px]">
                 <ProfileCard
                   key={ceo.id}
@@ -81,7 +88,7 @@ const App = () => {
                 />
               </Card>
             </div>
-            {roots && <Tabs employees={roots} />}
+            {roots && isActive && <Tabs employees={roots} />}
           </div>
         )}
       </div>
