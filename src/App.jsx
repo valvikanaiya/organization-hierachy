@@ -50,29 +50,40 @@ const App = () => {
       <Modal onClose={handelAddModalClose} open={addModal}>
         <AddEmployee
           id={employeIdcounter}
-          managerId={ceo.id}
+          managerId={ceo.id || null}
           handelModalClose={handelAddModalClose}
           imageUrl={"https://via.placeholder.com/150"}
         />
       </Modal>
+
       <div className="min-h-screen min-w-full bg-slate-950  p-4">
-        <div className="md:px-0 px-3 md:w-[99%] mx-auto">
-          <div className="w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
-            <Card className="w-full  sm:w-[500px]">
-              <ProfileCard
-                key={ceo.id}
-                img={ceo.imageUrl}
-                name={ceo.name}
-                designation={ceo.designation}
-                email={ceo.email}
-                addEmployee={handeleAddModalOpen}
-                subordinates={ceo.subordinates?.length || 0}
-                editEmployee={handeleModalOpen}
-              />
-            </Card>
+        {employeList.length === 0 ? (
+          <div className="flex h-screen items-center justify-center">
+            <button
+              className="text-white font-semibold bg-indigo-700 hover:bg-indigo-800 transition-all py-2 px-4 rounded"
+              onClick={handeleAddModalOpen}>
+              Add Manager
+            </button>
           </div>
-          {roots && <Tabs employees={roots} />}
-        </div>
+        ) : (
+          <div className="md:px-0 px-3 md:w-[99%] mx-auto">
+            <div className="w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 before:h-[3rem] before:w-[0px] before:border before:absolute  before:bottom-[-0%] before:border-indigo-800  border-b border-indigo-800">
+              <Card className="w-full  sm:w-[500px]">
+                <ProfileCard
+                  key={ceo.id}
+                  img={ceo.imageUrl}
+                  name={ceo.name}
+                  designation={ceo.designation}
+                  email={ceo.email}
+                  addEmployee={handeleAddModalOpen}
+                  subordinates={ceo.subordinates?.length || 0}
+                  editEmployee={handeleModalOpen}
+                />
+              </Card>
+            </div>
+            {roots && <Tabs employees={roots} />}
+          </div>
+        )}
       </div>
     </>
   );

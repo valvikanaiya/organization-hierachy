@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { employeeData } from "../../utils/utils";
 
-const initialState = employeeData;
 const employeSlice = createSlice({
   name: "employee",
   initialState: {
-    employeList: initialState,
-    employeIdcounter: 8,
+    employeList: [],
+    employeIdcounter: 1,
   },
   reducers: {
     addSubordinates: (state, actions) => {
@@ -76,7 +74,7 @@ const employeSlice = createSlice({
           return { ...item };
         }
       });
-      
+
       state.employeList = newState;
     },
   },
