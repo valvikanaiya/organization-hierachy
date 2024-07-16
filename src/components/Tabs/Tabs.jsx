@@ -3,22 +3,26 @@ import { useDispatch, useSelector } from "react-redux";
 import Employee from "../Employee/Employee";
 import Modal from "../Modal/Modal";
 import AddEmployee from "../AddEmployee/AddEmployee";
-import { deleteEmployee } from "../../store/slice/employee";
+import { setRootsList } from "../../store/slice/employee";
+import { database } from "../../config/firebase";
+import { get, ref, remove, update } from "@firebase/database";
 
 const Tabs = ({ employees }) => {
-  const { employeList, employeIdcounter } = useSelector(
+  const { employeList } = useSelector(
     (state) => state.employee
   );
 
-  const [expand, setExpand] = useState();
-  const [newEployee, setNewEmployee] = useState();
+  const { auth } = useSelector((state) => state.auth);
+  const [expandSet, setExpandSet] = useState(null);
+
+  const [newEmployee, setNewEmployee] = useState([]);
   const [open, setOpen] = useState(false);
   const [managerId, setManagerId] = useState(null);
 
   const dispatch = useDispatch();
 
   const filterEmployeById = (id) => {
-    setExpand(id === expand ? null : id);
+    setExpandSet(id !== expandSet ? id : null);
     const data = employeList?.filter((item) => item.managerId === id);
     setNewEmployee(data);
   };
@@ -33,19 +37,56 @@ const Tabs = ({ employees }) => {
     setOpen(true);
   };
 
-  const handelDeleteEmployee = (item) => {
-    dispatch(deleteEmployee(item));
+  const getData = async () => {
+    try {
+      const userRef = ref(database, `users/${auth.uid}/employees`);
+      const data = await get(userRef);
+      const newData = Object.values(data.val());
+      dispatch(setRootsList(newData));
+    } catch (error) {
+      console.error(error, error);
+    }
+  };
+
+  const handelDeleteEmployee = async (item) => {
+    try {
+      const employeeRef = ref(
+        database,
+        `users/${auth.uid}/employees/${item.id}`
+      );
+      await remove(employeeRef);
+      if (item?.managerId) {
+        try {
+          const managerRef = ref(
+            database,
+            `users/${auth.uid}/employees/${item.managerId}`
+          );
+          const managerSnapshot = await get(managerRef);
+          const managerData = managerSnapshot.val();
+
+          if (managerData) {
+            const updatedSubordinates = managerData.subordinates.filter(
+              (ids) => ids !== item.id
+            );
+            await update(managerRef, { subordinates: updatedSubordinates });
+            getData();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   useEffect(() => {
-    filterEmployeById(expand);
-  }, [employeList]);
-
+    setNewEmployee(employeList?.filter((item) => item.managerId === expandSet));
+  }, [employeList, expandSet]);
   return (
     <>
       <Modal onClose={handelModalClose} open={open}>
         <AddEmployee
-          id={employeIdcounter}
           managerId={managerId}
           handelModalClose={handelModalClose}
           imageUrl={"https://via.placeholder.com/150"}
@@ -60,15 +101,14 @@ const Tabs = ({ employees }) => {
                 item.managerId === null ? "justify-center" : "justify-between"
               }`}>
               <Employee
-                expand={expand === item.id}
+                expand={expandSet === item.id}
+                // expand={expandSet.has(item.id)}
                 isrootManager={item.managerId === null}
                 employee={item}
                 handelEmployeeView={() => filterEmployeById(item.id)}
                 handelModalOpen={() => handelModalOpen(item.id)}
                 deleteEmployee={
-                  item?.subordinates?.length === 0
-                    ? () => handelDeleteEmployee(item)
-                    : false
+                  !item?.subordinates ? () => handelDeleteEmployee(item) : false
                 }
               />
             </div>
@@ -76,11 +116,19 @@ const Tabs = ({ employees }) => {
         </div>
       </div>
       <div className="w-full">
-        {expand && (
-          <div className="border-t flex flex-wrap border-indigo-600 ">
-            <Tabs key={Math.random(1, 100) * 100} employees={newEployee} />
-          </div>
-        )}
+        {employees.map((item) => {
+          if (item.id === expandSet) {
+            return (
+              <div className="border-t flex flex-wrap border-indigo-600">
+                <Tabs
+                  employees={newEmployee.filter(
+                    (emp) => emp.managerId === expandSet
+                  )}
+                />
+              </div>
+            );
+          }
+        })}
       </div>
     </>
   );

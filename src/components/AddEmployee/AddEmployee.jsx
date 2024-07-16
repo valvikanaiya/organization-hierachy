@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import InputsItem from "../InputsItem/InputsItem";
-import { useDispatch } from "react-redux";
-import { addSubordinates } from "../../store/slice/employee";
-
-const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
+import { useDispatch, useSelector } from "react-redux";
+import { setRootsList } from "../../store/slice/employee";
+import { ref, set, push, get, update } from "firebase/database";
+import { database } from "../../config/firebase";
+const AddEmployee = ({ managerId, imageUrl, handelModalClose }) => {
+  const { auth } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    id: id,
     name: "",
     email: "",
     subordinates: [],
@@ -55,6 +56,62 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
     setFormData((preve) => ({ ...preve, designation: e.target.value }));
   };
 
+  const getData = async () => {
+    try {
+      const userRef = ref(database, `users/${auth.uid}/employees`);
+      const data = await get(userRef);
+      const newData = Object.values(data.val());
+      dispatch(setRootsList(newData));
+    } catch (error) {
+      console.error(error, error);
+    }
+  };
+
+  const addEmployee = async (formData) => {
+    try {
+      const employeesRef = ref(database, `users/${auth.uid}/employees/`);
+      const newEmployeeRef = await push(employeesRef);
+      const { name, email, managerId, designation, imageUrl } = formData;
+
+      const newEmployee = {
+        name,
+        email,
+        managerId,
+        designation,
+        imageUrl,
+        id: newEmployeeRef.key,
+        subordinates: [],
+      };
+      await set(newEmployeeRef, newEmployee);
+
+      if (managerId) {
+        try {
+          const managerRef = ref(
+            database,
+            `users/${auth.uid}/employees/${managerId}`
+          );
+          const managerSnapshot = await get(managerRef);
+          const managerData = managerSnapshot.val();
+          if (managerData) {
+            const updatedSubordinates = managerData.subordinates
+              ? [...managerData.subordinates, newEmployeeRef.key]
+              : [newEmployeeRef.key];
+            await update(managerRef, { subordinates: updatedSubordinates });
+            getData();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        getData();
+      }
+      handelModalClose();
+    } catch (error) {
+      handelModalClose();
+      console.error(error);
+    }
+  };
+
   const handelSubmit = () => {
     const { imageUrl, name, designation, email } = formData;
     if (imageUrl?.trim() === "") {
@@ -79,13 +136,7 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
       setError((preve) => ({ ...preve, email: true }));
       return;
     }
-
-    dispatch(
-      addSubordinates({
-        ...formData,
-      })
-    );
-    handelModalClose();
+    addEmployee(formData);
   };
 
   return (
@@ -96,21 +147,18 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
         </h3>
         <div>
           <div>
-            <InputsItem value={id} onChange={() => {}} disabled={true} />
-          </div>
-          <div>
             <InputsItem
               type="text"
               label={"Name"}
               value={formData.name}
               error={error.name}
               onChange={(e) => handelNameChange(e)}
-              placeholder="Enter the name"
+              placeholder="Enter name"
             />
           </div>
           <div>
             <InputsItem
-              type="number"
+              type="text"
               label={"Manager Id"}
               value={formData.managerId}
               onChange={(e) => {}}
@@ -135,18 +183,9 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
               onChange={(e) => {
                 handelEmailChange(e);
               }}
+              placeholder="Enter email"
             />
           </div>
-          {/* <div>
-            <InputsItem
-              type="number"
-              label={"Subordinates"}
-              value={formData.subordinates}
-              onChange={(e) => {
-                handelSubordinatesChange(e);
-              }}
-            />
-          </div> */}
           <div>
             <InputsItem
               type="text"
@@ -156,6 +195,7 @@ const AddEmployee = ({ id, managerId, imageUrl, handelModalClose }) => {
               onChange={(e) => {
                 handelDesignationChange(e);
               }}
+              placeholder="Enter designation"
             />
           </div>
         </div>

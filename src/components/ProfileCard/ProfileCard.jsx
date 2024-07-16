@@ -1,6 +1,8 @@
 import PlaceholderImage from "@assets/Icons/PlaceholderImage.svg";
 import Edit from "@assets/Icons/Edit.svg";
 import Delete from "@assets/Icons/Delete.svg";
+import Modal from "../Modal/Modal";
+import { useState } from "react";
 export default function ProfileCard({
   img,
   name,
@@ -11,17 +13,47 @@ export default function ProfileCard({
   editEmployee,
   deleteEmployee,
 }) {
+  const [open, setOpen] = useState(false);
   const handelAddEmoloye = (e) => {
     e.stopPropagation();
     addEmployee();
   };
+  const openDeleteModal = () => {
+    setOpen(true);
+  };
   const handelDeleateEmploye = (e) => {
     e.stopPropagation();
-    deleteEmployee();
+    openDeleteModal();
+  };
+  const handelEdit = (e) => {
+    e.stopPropagation();
+    editEmployee();
   };
 
+  const handelModalClose = () => {
+    setOpen(false);
+  };
   return (
     <>
+      <Modal onClose={handelModalClose} open={open}>
+        <div className="p-6">
+          <div className="text-center text-xl mb-4 font-semibold">
+            Are you sore you want to delete manager?
+          </div>
+          <div className="flex items-center justify-center gap-4">
+            <button
+              className="bg-green-600 py-3 px-4 rounded text-white"
+              onClick={() => deleteEmployee()}>
+              Calcel
+            </button>
+            <button
+              className="bg-red-600 py-3 px-4 rounded text-white"
+              onClick={() => deleteEmployee()}>
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
       <div className="grid h-full grid-cols-1 md:grid-cols-8 gap-4 bg-slate-800 ring-1 hover:bg-slate-900 transition-all">
         <div
           className={`h-40 md:h-auto md:col-span-3 bg-indigo-400 flex items-start justify-center ${
@@ -63,7 +95,7 @@ export default function ProfileCard({
             {editEmployee && subordinates !== 0 && (
               <button
                 className="flex items-center justify-center p-2 rounded border-2 border-indigo-500 py-3 px-6 hover:border-indigo-600"
-                onClick={() => editEmployee()}>
+                onClick={handelEdit}>
                 <img src={Edit} className="h-4 w-4" alt="" />
               </button>
             )}

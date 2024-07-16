@@ -1,25 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changeManager } from "@store/slice/employee";
+import { setRootsList } from "../../store/slice/employee";
+import { get, ref, update } from "@firebase/database";
+import { database } from "../../config/firebase";
 
 const ChangeManager = ({ handelModalClose }) => {
   const { employeList } = useSelector((state) => state.employee);
+  const { auth } = useSelector((state) => state.auth);
 
   const [defaultManager, setDefaultManager] = useState({});
   const [newManager, setNewManager] = useState(defaultManager);
 
   const dispatch = useDispatch();
 
-  const handelManagerChange = () => {
+  const getData = async () => {
+    try {
+      const userRef = ref(database, `users/${auth.uid}/employees`);
+      const data = await get(userRef);
+      const newData = Object.values(data.val());
+      dispatch(setRootsList(newData));
+    } catch (error) {
+      console.error(error, error);
+    }
+  };
+
+  const handelManagerChange = async () => {
     if (newManager === null) {
       return;
     } else {
-      dispatch(
-        changeManager({
-          manager: defaultManager,
-          newManager: Number(newManager),
-        })
-      );
+      if (defaultManager.id && newManager.id) {
+        try {
+          const dmRef = ref(
+            database,
+            `users/${auth.uid}/employees/${defaultManager.id}`
+          );
+          const dmanagerSnapshot = await get(dmRef);
+          const dmanagerData = dmanagerSnapshot.val();
+
+          if (dmanagerData) {
+            const updatedSubordinates = {
+              name: newManager.name,
+              email: newManager.email,
+              designation: newManager.designation,
+            };
+            await update(dmRef, updatedSubordinates);
+            getData();
+          }
+          const nmRef = ref(
+            database,
+            `users/${auth.uid}/employees/${newManager.id}`
+          );
+          const nmanagerSnapshot = await get(nmRef);
+          const nmanagerData = nmanagerSnapshot.val();
+
+          if (nmanagerData) {
+            const updatedSubordinates = {
+              name: defaultManager.name,
+              email: defaultManager.email,
+              designation: defaultManager.designation,
+            };
+            await update(nmRef, updatedSubordinates);
+          }
+          getData();
+        } catch (error) {
+          console.error(error);
+        }
+      }
       handelModalClose();
     }
   };
@@ -29,8 +75,8 @@ const ChangeManager = ({ handelModalClose }) => {
   }, [defaultManager]);
 
   useEffect(() => {
-    const manager = employeList.find((item) => item.managerId === null);
-    setDefaultManager(manager.id);
+    const manager = employeList[0];
+    setDefaultManager(manager);
   }, [employeList]);
 
   return (
@@ -44,12 +90,12 @@ const ChangeManager = ({ handelModalClose }) => {
             <select
               className="w-full border p-2 rounded focus:outline-none focus:-outline-offset-0 focus:ring-1 focus:outline-indigo-600"
               name=""
-              onChange={(e) => setNewManager(e.target.value)}
+              onChange={(e) => setNewManager(JSON.parse(e.target.value))}
               defaultValue={defaultManager}
               value={newManager}
               id="">
               {employeList.map((employee) => (
-                <option key={employee.id} value={employee.id}>
+                <option key={employee.id} value={JSON.stringify(employee)}>
                   {employee.email}
                 </option>
               ))}
