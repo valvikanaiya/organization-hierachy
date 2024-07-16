@@ -6,6 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import GoogleLogo from "@assets/Icons/google-icon.svg";
 
 import { app } from "../../config/firebase";
 import { useDispatch, useSelector } from "react-redux";
@@ -74,14 +75,17 @@ const Singup = () => {
   }, [auth]);
 
   return (
-    <div className="min-h-screen min-w-full bg-slate-950  p-4 texnpm install firebaset-white">
-      <button onClick={handelSignUp} className="text-white">
-        Google Signin
+    <div className="min-h-screen min-w-full flex items-center justify-center bg-slate-950  p-4 texnpm install firebaset-white">
+      <button
+        onClick={handelSignUp}
+        className="text-white border font-semibold hover:bg-slate-900/50 border-indigo-500 py-2 px-8 rounded-md flex gap-4 items-center">
+        <img src={GoogleLogo} alt="" />
+        Continue with google
       </button>
       <br />
-      <button onClick={handelSignOut} className="text-white">
+      {/* <button onClick={handelSignOut} className="text-white">
         Google SignOut
-      </button>
+      </button> */}
     </div>
   );
 };
