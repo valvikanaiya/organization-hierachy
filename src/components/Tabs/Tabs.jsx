@@ -6,22 +6,23 @@ import AddEmployee from "../AddEmployee/AddEmployee";
 import { setRootsList } from "../../store/slice/employee";
 import { database } from "../../config/firebase";
 import { get, ref, remove, update } from "@firebase/database";
+import EditEmployee from "../EditEmployee/EditEmployee";
 
 const Tabs = ({ employees }) => {
-  const { employeList } = useSelector(
-    (state) => state.employee
-  );
-
+  const { employeList } = useSelector((state) => state.employee);
+  console.log(employeList);
   const { auth } = useSelector((state) => state.auth);
   const [expandSet, setExpandSet] = useState(null);
-
   const [newEmployee, setNewEmployee] = useState([]);
   const [open, setOpen] = useState(false);
   const [managerId, setManagerId] = useState(null);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(false);
 
   const dispatch = useDispatch();
 
   const filterEmployeById = (id) => {
+    console.log(id);
     setExpandSet(id !== expandSet ? id : null);
     const data = employeList?.filter((item) => item.managerId === id);
     setNewEmployee(data);
@@ -35,6 +36,14 @@ const Tabs = ({ employees }) => {
   const handelModalOpen = (id) => {
     setManagerId(id);
     setOpen(true);
+  };
+
+  const hadelEditModalOpen = (employee) => {
+    setEditEmployee(employee);
+    setOpenEditModal(true);
+  };
+  const hadelEditModalClose = () => {
+    setOpenEditModal(false);
   };
 
   const getData = async () => {
@@ -92,6 +101,12 @@ const Tabs = ({ employees }) => {
           imageUrl={"https://via.placeholder.com/150"}
         />
       </Modal>
+      <Modal onClose={hadelEditModalClose} open={openEditModal}>
+        <EditEmployee
+          employee={editEmployee}
+          handelModalClose={hadelEditModalClose}
+        />
+      </Modal>
       <div className="w-full">
         <div className="flex justify-center place-self-stretch  flex-wrap">
           {employees?.map((item) => (
@@ -101,15 +116,17 @@ const Tabs = ({ employees }) => {
                 item.managerId === null ? "justify-center" : "justify-between"
               }`}>
               <Employee
-                expand={expandSet === item.id}
-                // expand={expandSet.has(item.id)}
+                expand={expandSet === item.id && item.subordinates?.length > 0}
                 isrootManager={item.managerId === null}
                 employee={item}
-                handelEmployeeView={() => filterEmployeById(item.id)}
+                handelEmployeeView={() => {
+                  filterEmployeById(item.id);
+                }}
                 handelModalOpen={() => handelModalOpen(item.id)}
                 deleteEmployee={
                   !item?.subordinates ? () => handelDeleteEmployee(item) : false
                 }
+                editEmployee={() => hadelEditModalOpen(item)}
               />
             </div>
           ))}
@@ -117,7 +134,7 @@ const Tabs = ({ employees }) => {
       </div>
       <div className="w-full">
         {employees.map((item) => {
-          if (item.id === expandSet) {
+          if (item.id === expandSet && item?.subordinates?.length > 0) {
             return (
               <div className="border-t flex flex-wrap border-indigo-600">
                 <Tabs

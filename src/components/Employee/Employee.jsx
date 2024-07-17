@@ -7,6 +7,8 @@ const Employee = ({
   handelModalOpen,
   isrootManager,
   deleteEmployee,
+  editEmployee,
+  cangeManager,
 }) => {
   return (
     <div
@@ -22,7 +24,7 @@ const Employee = ({
       <Card
         className="w-full sm:w-[500px]"
         onClick={() => {
-          if (employee?.subordinates?.length) handelEmployeeView(employee.id);
+          handelEmployeeView(employee.id);
         }}>
         <ProfileCard
           key={employee?.id}
@@ -33,6 +35,7 @@ const Employee = ({
           subordinates={employee?.subordinates?.length || 0}
           addEmployee={() => handelModalOpen(employee.id)}
           deleteEmployee={deleteEmployee}
+          editEmployee={editEmployee}
         />
       </Card>
     </div>

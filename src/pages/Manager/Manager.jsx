@@ -10,12 +10,11 @@ import { get, ref } from "@firebase/database";
 import { database } from "../../config/firebase";
 import { setRootsList } from "../../store/slice/employee";
 import Loader from "../../components/Loader/Loader";
+import EditEmployee from "../../components/EditEmployee/EditEmployee";
 
 const Manager = () => {
   const { auth } = useSelector((state) => state.auth);
-  const { employeList } = useSelector(
-    (state) => state.employee
-  );
+  const { employeList } = useSelector((state) => state.employee);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,6 +42,8 @@ const Manager = () => {
   const [open, setOpen] = useState(false);
   const [addModal, setAddModal] = useState(false);
   const [isActive, setIsAvtive] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(false);
 
   useEffect(() => {
     const newCeo = employeList[0];
@@ -70,6 +71,14 @@ const Manager = () => {
     setAddModal(false);
   };
 
+  const hadelEditModalOpen = (employee) => {
+    setEditEmployee(employee);
+    setOpenEditModal(true);
+  };
+
+  const hadelEditModalClose = () => {
+    setOpenEditModal(false);
+  };
   return (
     <>
       <Modal onClose={handelModalClose} open={open}>
@@ -82,7 +91,12 @@ const Manager = () => {
           imageUrl={"https://via.placeholder.com/150"}
         />
       </Modal>
-
+      <Modal onClose={hadelEditModalClose} open={openEditModal}>
+        <EditEmployee
+          employee={editEmployee}
+          handelModalClose={hadelEditModalClose}
+        />
+      </Modal>
       <div className="min-h-screen min-w-full bg-slate-950  p-4">
         {isLoading ? (
           <Loader />
@@ -115,7 +129,8 @@ const Manager = () => {
                       email={ceo.email}
                       addEmployee={handeleAddModalOpen}
                       subordinates={ceo.subordinates?.length || 0}
-                      editEmployee={handeleModalOpen}
+                      editEmployee={() => hadelEditModalOpen(ceo)}
+                      cangeManager={handeleModalOpen}
                     />
                   </Card>
                 </div>
