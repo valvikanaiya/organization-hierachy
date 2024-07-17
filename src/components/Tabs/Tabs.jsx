@@ -10,7 +10,6 @@ import EditEmployee from "../EditEmployee/EditEmployee";
 
 const Tabs = ({ employees }) => {
   const { employeList } = useSelector((state) => state.employee);
-  console.log(employeList);
   const { auth } = useSelector((state) => state.auth);
   const [expandSet, setExpandSet] = useState(null);
   const [newEmployee, setNewEmployee] = useState([]);
@@ -22,13 +21,13 @@ const Tabs = ({ employees }) => {
   const dispatch = useDispatch();
 
   const filterEmployeById = (id) => {
-    console.log(id);
     setExpandSet(id !== expandSet ? id : null);
     const data = employeList?.filter((item) => item.managerId === id);
     setNewEmployee(data);
   };
 
   const handelModalClose = () => {
+    setExpandSet(managerId);
     setManagerId(null);
     setOpen(false);
   };
@@ -63,27 +62,40 @@ const Tabs = ({ employees }) => {
         database,
         `users/${auth.uid}/employees/${item.id}`
       );
-      await remove(employeeRef);
-      if (item?.managerId) {
-        try {
-          const managerRef = ref(
-            database,
-            `users/${auth.uid}/employees/${item.managerId}`
-          );
-          const managerSnapshot = await get(managerRef);
-          const managerData = managerSnapshot.val();
+      const employeeSnapshot = await get(employeeRef);
+      const employee = employeeSnapshot.val();
 
-          if (managerData) {
-            const updatedSubordinates = managerData.subordinates.filter(
-              (ids) => ids !== item.id
-            );
-            await update(managerRef, { subordinates: updatedSubordinates });
-            getData();
-          }
-        } catch (error) {
-          console.error(error);
+      if (
+        employee &&
+        employee.subordinates &&
+        employee.subordinates.length > 0
+      ) {
+        for (const subId of employee.subordinates) {
+          const payload = { id: subId, managerId: item.id };
+          await handelDeleteEmployee(payload); // Recursively delete each subordinate
         }
       }
+
+      // Delete the employee node
+      await remove(employeeRef);
+
+      // Update parent's subordinates list
+      if (item.managerId) {
+        const parentRef = ref(
+          database,
+          `users/${auth.uid}/employees/${item.managerId}`
+        );
+        const parentSnapshot = await get(parentRef);
+        const parent = parentSnapshot.val();
+
+        if (parent && parent.subordinates) {
+          const updatedSubordinates = parent.subordinates.filter(
+            (subId) => subId !== item.id
+          );
+          await update(parentRef, { subordinates: updatedSubordinates });
+        }
+      }
+      getData();
     } catch (error) {
       console.error("error", error);
     }
@@ -123,9 +135,7 @@ const Tabs = ({ employees }) => {
                   filterEmployeById(item.id);
                 }}
                 handelModalOpen={() => handelModalOpen(item.id)}
-                deleteEmployee={
-                  !item?.subordinates ? () => handelDeleteEmployee(item) : false
-                }
+                deleteEmployee={() => handelDeleteEmployee(item)}
                 editEmployee={() => hadelEditModalOpen(item)}
               />
             </div>

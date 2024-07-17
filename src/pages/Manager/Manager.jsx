@@ -6,7 +6,7 @@ import ChangeManager from "@components/ChangeManager/ChangeManager";
 import Modal from "@components/Modal/Modal";
 import AddEmployee from "@components/AddEmployee/AddEmployee";
 import ProfileCard from "@components/ProfileCard/ProfileCard";
-import { get, ref } from "@firebase/database";
+import { get, ref, remove, update } from "@firebase/database";
 import { database } from "../../config/firebase";
 import { setRootsList } from "../../store/slice/employee";
 import Loader from "../../components/Loader/Loader";
@@ -15,7 +15,13 @@ import EditEmployee from "../../components/EditEmployee/EditEmployee";
 const Manager = () => {
   const { auth } = useSelector((state) => state.auth);
   const { employeList } = useSelector((state) => state.employee);
-
+  const [roots, setRoots] = useState([]);
+  const [ceo, setCeo] = useState({});
+  const [open, setOpen] = useState(false);
+  const [addModal, setAddModal] = useState(false);
+  const [isActive, setIsAvtive] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -36,14 +42,50 @@ const Manager = () => {
   useEffect(() => {
     getData();
   }, [auth]);
+  const handelDeleteEmployee = async (item) => {
+    try {
+      const employeeRef = ref(
+        database,
+        `users/${auth.uid}/employees/${item.id}`
+      );
+      const employeeSnapshot = await get(employeeRef);
+      const employee = employeeSnapshot.val();
 
-  const [roots, setRoots] = useState([]);
-  const [ceo, setCeo] = useState({});
-  const [open, setOpen] = useState(false);
-  const [addModal, setAddModal] = useState(false);
-  const [isActive, setIsAvtive] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [editEmployee, setEditEmployee] = useState(false);
+      if (
+        employee &&
+        employee.subordinates &&
+        employee.subordinates.length > 0
+      ) {
+        for (const subId of employee.subordinates) {
+          const payload = { id: subId, managerId: item.id };
+          await handelDeleteEmployee(payload); // Recursively delete each subordinate
+        }
+      }
+
+      // Delete the employee node
+      await remove(employeeRef);
+
+      // Update parent's subordinates list
+      if (item.managerId) {
+        const parentRef = ref(
+          database,
+          `users/${auth.uid}/employees/${item.managerId}`
+        );
+        const parentSnapshot = await get(parentRef);
+        const parent = parentSnapshot.val();
+
+        if (parent && parent.subordinates) {
+          const updatedSubordinates = parent.subordinates.filter(
+            (subId) => subId !== item.id
+          );
+          await update(parentRef, { subordinates: updatedSubordinates });
+        }
+      }
+      getData();
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
 
   useEffect(() => {
     const newCeo = employeList[0];
@@ -68,6 +110,7 @@ const Manager = () => {
   };
 
   const handelAddModalClose = () => {
+    setIsAvtive(true);
     setAddModal(false);
   };
 
@@ -131,6 +174,9 @@ const Manager = () => {
                       subordinates={ceo.subordinates?.length || 0}
                       editEmployee={() => hadelEditModalOpen(ceo)}
                       cangeManager={handeleModalOpen}
+                      deleteEmployee={() => {
+                        handelDeleteEmployee(ceo);
+                      }}
                     />
                   </Card>
                 </div>

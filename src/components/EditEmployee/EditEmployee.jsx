@@ -50,7 +50,6 @@ const EditEmployee = ({ employee, handelModalClose }) => {
     setFormData((preve) => ({ ...preve, designation: e.target.value }));
   };
   const getData = async () => {
-    console.log("fatch Data");
     try {
       const userRef = ref(database, `users/${auth.uid}/employees`);
       const data = await get(userRef);
@@ -63,9 +62,7 @@ const EditEmployee = ({ employee, handelModalClose }) => {
     }
   };
   const handelSubmit = async () => {
-    console.log("handel submits");
     const { id, imageUrl, name, designation, email } = formData;
-    console.log(id, imageUrl, name, designation, email);
     if (imageUrl?.trim() === "") {
       setError((preve) => ({ ...preve, imageUrl: true }));
       return;
@@ -94,7 +91,7 @@ const EditEmployee = ({ employee, handelModalClose }) => {
         getData();
       }
     } catch (error) {
-      console.error("error",error)
+      console.error("error", error);
     }
   };
 
