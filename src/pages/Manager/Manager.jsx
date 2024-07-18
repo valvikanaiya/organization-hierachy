@@ -30,8 +30,12 @@ const Manager = () => {
       setIsLoading(true);
       const userRef = ref(database, `users/${auth.uid}/employees`);
       const data = await get(userRef);
-      const newData = Object.values(data.val());
-      dispatch(setRootsList(newData));
+      if (data.exists()) {
+        const newData = Object?.values(data?.val());
+        dispatch(setRootsList(newData));
+      } else {
+        dispatch(setRootsList([]));
+      }
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -145,13 +149,7 @@ const Manager = () => {
           <Loader />
         ) : (
           <>
-            {employeList && employeList?.length === 0 ? (
-              <button
-                className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]  text-white font-semibold bg-indigo-700 hover:bg-indigo-800 transition-all py-2 px-4 rounded"
-                onClick={handeleAddModalOpen}>
-                Add Manager
-              </button>
-            ) : (
+            {employeList && employeList?.length !== 0 ? (
               <div className="md:px-0 px-3 md:w-[99%] mx-auto">
                 <div
                   className={`w-full mx-auto flex-wrap flex items-center justify-center relative py-12 sm:p-12 ${
@@ -182,6 +180,12 @@ const Manager = () => {
                 </div>
                 {roots && isActive && <Tabs employees={roots} />}
               </div>
+            ) : (
+              <button
+                className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]  text-white font-semibold bg-indigo-700 hover:bg-indigo-800 transition-all py-2 px-4 rounded"
+                onClick={handeleAddModalOpen}>
+                Add Manager
+              </button>
             )}
           </>
         )}

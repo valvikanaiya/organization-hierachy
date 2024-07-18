@@ -49,8 +49,12 @@ const Tabs = ({ employees }) => {
     try {
       const userRef = ref(database, `users/${auth.uid}/employees`);
       const data = await get(userRef);
-      const newData = Object.values(data.val());
-      dispatch(setRootsList(newData));
+      if (data.exists()) {
+        const newData = Object?.values(data?.val());
+        dispatch(setRootsList(newData));
+      } else {
+        dispatch(setRootsList([]));
+      }
     } catch (error) {
       console.error(error, error);
     }
