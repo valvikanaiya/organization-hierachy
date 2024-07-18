@@ -33,7 +33,6 @@ export default function ProfileCard({
     editEmployee();
   };
   const handelManagerChange = (e) => {
-    console.log(e.target);
     e.stopPropagation();
     cangeManager();
   };

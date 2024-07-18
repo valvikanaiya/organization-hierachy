@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import Loader from "../Loader/Loader";
 
 const ProtectedRoute = ({ userData }) => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const ProtectedRoute = ({ userData }) => {
   }, [userData]);
   return (
     <div>
-      <Suspense fallback={<h1>Locating</h1>}>
+      <Suspense fallback={<Loader />}>
         <Outlet />
       </Suspense>
     </div>
