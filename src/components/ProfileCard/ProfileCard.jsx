@@ -32,6 +32,11 @@ export default function ProfileCard({
     e.stopPropagation();
     editEmployee();
   };
+  const handelManagerChange = (e) => {
+    console.log(e.target);
+    e.stopPropagation();
+    cangeManager();
+  };
 
   const handelModalClose = () => {
     setOpen(false);
@@ -105,7 +110,7 @@ export default function ProfileCard({
             {cangeManager && (
               <button
                 className="flex items-center justify-center p-2 rounded border-2 border-indigo-500 py-3  text-white font-semibold px-6 hover:border-indigo-600"
-                onClick={handelEdit}>
+                onClick={handelManagerChange}>
                 <img src={Change} className="h-4 w-4" alt="" />
               </button>
             )}

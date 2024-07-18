@@ -97,7 +97,7 @@ const Manager = () => {
     setRoots(newRoot);
   }, [ceo, employeList, isActive]);
 
-  const handeleModalOpen = (e) => {
+  const handeleModalOpen = () => {
     setOpen(true);
   };
 
